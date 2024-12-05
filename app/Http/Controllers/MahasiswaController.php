@@ -36,7 +36,7 @@ class MahasiswaController extends Controller
     {
         // Validasi data
         $validated = $request->validate([
-            'npm' => 'required|unique:mahasiswa|max:50',
+            'npm' => 'required|unique:mahasiswas|max:50',
             'nama' => 'required|string|max:255',
             'prodi' => 'required|string|max:100',
         ]);
@@ -78,4 +78,19 @@ class MahasiswaController extends Controller
         // Redirect dengan pesan sukses
         return redirect()->route('mahasiswa.index')->with('success', 'Data mahasiswa berhasil diupdate!');
     }
+
+    public function destroy($id)
+    {
+        $mahasiswa = Mahasiswa::findOrFail($id);
+        $mahasiswa->delete();
+
+        return redirect()->route('dashboard')->with('success', 'Data mahasiswa berhasil dihapus!');
+    }
+
+    public function edit($id)
+    {
+        $mahasiswa = Mahasiswa::findOrFail($id);
+        return view('mahasiswa.edit', compact('mahasiswa'));
+    }
+
 }
