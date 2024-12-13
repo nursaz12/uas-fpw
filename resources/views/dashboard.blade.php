@@ -19,14 +19,25 @@
                         </div>
                     @endif
 
-                    <!-- Tombol tambah data -->
-                    <div class="mb-4">
+                    <!-- Container untuk tombol tambah data dan search -->
+                    <div class="mb-4 flex items-center justify-between">
+                        <!-- Tombol Tambah Data -->
                         <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700">
                             <a href="{{ route('mahasiswa.mahasiswas') }}" class="block">Tambah Data Mahasiswa</a>
                         </button>
+
+                        <!-- Form Search -->
+                        <form method="GET" action="{{ route('mahasiswa.index') }}" class="flex">
+                            <input type="text" name="search" value="{{ request('search') }}" 
+                                placeholder="Cari mahasiswa..." 
+                                class="border border-gray-300 px-4 py-2 rounded-l focus:outline-none">
+                            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-r hover:bg-blue-700">
+                                Cari
+                            </button>
+                        </form>     
                     </div>
 
-                    <!-- Tabel data mahasiswa -->
+                    <!-- Tabel Data Mahasiswa -->
                     <table class="table-auto w-full border-collapse border border-gray-300 text-sm">
                         <thead>
                             <tr>
@@ -40,33 +51,38 @@
                         <tbody>
                             @forelse ($mahasiswa as $key => $item)
                                 <tr>
-                                    <td class="border px-4 py-2 text-center">{{ $key + 1 }}</td>
+                                    <td class="border px-4 py-2 text-center">{{ $loop->iteration }}</td>
                                     <td class="border px-4 py-2">{{ $item->npm }}</td>
                                     <td class="border px-4 py-2">{{ $item->nama }}</td>
                                     <td class="border px-4 py-2">{{ $item->prodi }}</td>
                                     <td class="border px-4 py-2 text-center">
                                         <!-- Tombol Edit -->
                                         <a href="{{ route('mahasiswa.edit', $item->id) }}" class="text-blue-500 hover:text-blue-700 mx-1">
-                                            <i class="fas fa-edit"></i> <!-- Ikon Edit -->
+                                            <i class="fas fa-edit"></i>
                                         </a>
 
                                         <!-- Tombol Hapus -->
-                                        <form action="{{ route('mahasiswa.destroy', $item->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Serius mau apus?');">
+                                        <form action="{{ route('mahasiswa.destroy', $item->id) }}" method="POST" class="inline-block" 
+                                            onsubmit="return confirm('Serius mau apus?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="text-red-500 hover:text-red-700 mx-1">
-                                                <i class="fas fa-trash"></i> <!-- Ikon Hapus -->
+                                                <i class="fas fa-trash"></i>
                                             </button>
                                         </form>
                                     </td>
                                 </tr>
                             @empty
-                                <tr>
-                                    <td colspan="5" class="text-center border px-4 py-2">Tidak ada data.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
+        <tr>
+            <td colspan="5" class="text-center border px-4 py-2">Data tidak ditemukan.</td>
+        </tr>
+    @endforelse
+</tbody>
+
                     </table>
+                    <div class="mt-4">
+                        {{ $mahasiswa->links() }}
+                    </div>
                 </div>
             </div>
         </div>

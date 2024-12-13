@@ -5,19 +5,29 @@ namespace App\Http\Controllers;
 use App\Exports\MahasiswaExport;
 use Illuminate\Http\Request;
 use App\Models\Mahasiswa;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
+
+
 
 class MahasiswaController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Ambil semua data mahasiswa dari database
-        $mahasiswa = Mahasiswa::all();
+        // Ambil query pencarian
+        $search = $request->input('search');
 
-        // Tampilkan ke view
-        return view('dashboard', compact('mahasiswa'));
+        // Filter data berdasarkan pencarian, tetap menggunakan pagination
+        $mahasiswa = Mahasiswa::when($search, function ($query, $search) {
+            return $query->where('nama', 'like', "%{$search}%")
+                        ->orWhere('npm', 'like', "%{$search}%");
+        })->paginate(5);
+
+        // Tampilkan ke view dengan query pencarian
+        return view('dashboard', compact('mahasiswa', 'search'));
     }
 
     /**
@@ -79,6 +89,7 @@ class MahasiswaController extends Controller
         return redirect()->route('mahasiswa.index')->with('success', 'Data mahasiswa berhasil diupdate!');
     }
 
+    // Fungsi untuk menghapus data
     public function destroy($id)
     {
         $mahasiswa = Mahasiswa::findOrFail($id);
@@ -87,6 +98,7 @@ class MahasiswaController extends Controller
         return redirect()->route('dashboard')->with('success', 'Data mahasiswa berhasil dihapus!');
     }
 
+    // Fungsi untuk edit data mahasiswa
     public function edit($id)
     {
         $mahasiswa = Mahasiswa::findOrFail($id);
